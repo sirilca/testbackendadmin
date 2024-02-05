@@ -12,7 +12,16 @@ app.use(bodyparser.json({ limit: '50mb' }));
 app.use(bodyparser.urlencoded({ limit: '50mb', extended: true }));
 
 
-app.use(cors({ origin: ['https://adminside-project-p.onrender.com'], credentials: true })); //cancelled for a timebeing
+app.use(cors({ origin: ['https://adminside-project-p.onrender.com','http://localhost:5173'], 
+credentials: true ,
+methods: ['GET','POST','DELETE','OPTIONS' ],
+allowedHeaders:[
+    'Access-Control-Allow-Origin',
+    'Content-Type',
+    'Authorization',
+],
+
+})); 
 
 app.set("trust proxy", 1);
 // app.use(cors())
@@ -52,6 +61,7 @@ app.post("/", async (req, res) => {
 // const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('./main/usersmongo');
+const { env } = require("process")
 
 
 app.post('/api/login', async (req, res) => {
@@ -71,7 +81,12 @@ app.post('/api/login', async (req, res) => {
         // Generate token
         const token = jwt.sign({ userId: user._id }, 'x6dc003akf1');
         // Set cookie with token
-        res.cookie('token', token, { maxAge: 7200000 ,secure:true,httpOnly:true}); //two hours 7200000
+        res.cookie('token', token, { maxAge: 7200000 ,
+            // secure:true,
+            httpOnly:true,
+            secure: env.ENVIRONMENT === 'LIVE',
+            sameSite: env.ENVIRONMENT === 'LIVE' ? 'none' : 'lax',
+        }); //two hours 7200000
         console.log(token)
 
 
