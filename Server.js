@@ -14,7 +14,7 @@ app.use(bodyparser.urlencoded({ limit: '50mb', extended: true }));
 
 app.use(cors({ origin: ['https://adminside-project-p.onrender.com'], credentials: true })); //cancelled for a timebeing
 
-
+app.set("trust proxy", 1);
 // app.use(cors())
 
 
