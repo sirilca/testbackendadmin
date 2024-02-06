@@ -9,34 +9,41 @@ require('dotenv').config();
 const imagetolink = async (req, res, next) => {
     const { img } = req.body
 
-    // const imagebase64data = require("./zcomponents/biography")
-    const cloudinary = require('cloudinary').v2;
+    if(img){
 
-
-    // Return "https" URLs by setting secure: true
-    cloudinary.config({
-        secure: true
-    });
-
-
-    console.log(cloudinary.config());
-
-    cloudinary.uploader.upload(img, { resource_type: "image" }).then(resp => {
-        // console.log("success",JSON.stringify(res,null,2))
-        console.log(resp.url)
-        req.base64code = resp.url
+        
+        // const imagebase64data = require("./zcomponents/biography")
+        const cloudinary = require('cloudinary').v2;
+        
+        
+        // Return "https" URLs by setting secure: true
+        cloudinary.config({
+            secure: true
+        });
+        
+        
+        console.log(cloudinary.config());
+        
+        cloudinary.uploader.upload(img, { resource_type: "image" }).then(resp => {
+            // console.log("success",JSON.stringify(res,null,2))
+            console.log(resp.url)
+            req.base64code = resp.url
+            next()
+            
+        }).catch((err) => {
+            console.log(err)
+            next()
+        })
+    }
+    else{
         next()
-
-    }).catch((err) => {
-        console.log(err)
-        next()
-    })
+    }
 }
-
-router.get('/activity', async (req, res) => {
-    const sdata = await DataModel.find()
-    res.json(sdata[0].ActivitySection)
-
+    
+    router.get('/activity', async (req, res) => {
+        const sdata = await DataModel.find()
+        res.json(sdata[0].ActivitySection)
+        
 })
 
 
