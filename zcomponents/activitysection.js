@@ -11,6 +11,8 @@ const imagetolink = async (req, res, next) => {
 
     if(img){
 
+        try{
+
         
         // const imagebase64data = require("./zcomponents/biography")
         const cloudinary = require('cloudinary').v2;
@@ -34,6 +36,11 @@ const imagetolink = async (req, res, next) => {
             console.log(err)
             next()
         })
+        }
+        catch(err){
+            console.log("sry error occured in cloudinary");
+            console.log(err)
+        }
     }
     else{
         next()

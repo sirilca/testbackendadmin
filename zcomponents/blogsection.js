@@ -9,14 +9,14 @@ const imagetolink = async (req, res, next) => {
     const { img } = req.body;
     if (img) {
 
-
+        console.log(img);
         try {
             cloudinary.config({
                 secure: true
             });
             console.log(cloudinary.config());
 
-            cloudinary.uploader.upload(img, { resource_type: "image" }).then(resp => {
+            await cloudinary.uploader.upload(img, { resource_type: "image" }).then(resp => {
                 req.base64code = resp.url;
                 console.log(resp.url)
                 next();
@@ -27,6 +27,7 @@ const imagetolink = async (req, res, next) => {
         }
         catch (err) {
             console.log("error occured sorry");
+            console.log(err);
             next()
         }
 

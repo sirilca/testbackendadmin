@@ -25,9 +25,10 @@ const imagetolink = async (req, res, next) => {
             console.log(cloudinary.config());
 
 
-            cloudinary.uploader.upload(imagebase64code, { resource_type: "image" }).then(resp => {
+            await cloudinary.uploader.upload(imagebase64code, { resource_type: "image" }).then(resp => {
                 // console.log("success",JSON.stringify(res,null,2))
                 console.log(resp.url)
+                console.log("we are in side uploader");
                 req.base64code = resp.url
                 next()
 
@@ -89,7 +90,7 @@ router.patch('/biography/edititem/:id', imagetolink, async (req, res) => {
     // Prepare the update object based on the provided fields
     const updateObj = {};
     if (description) updateObj['biography.items.$.description'] = description;
-    if (image) updateObj['biography.items.$.image'] = req.base64code;
+    if (req.base64code) updateObj['biography.items.$.image'] = req.base64code;
     if (link) updateObj['biography.items.$.link'] = link;
     console.log(updateObj)
     try {
