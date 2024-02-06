@@ -45,11 +45,11 @@ mongoose.connect("mongodb+srv://thejusjoseph:dwMMlpOhly7HFKgx@cluster0.2mkkvws.m
 
 app.get('/', async (req, res) => {
     const alldata = await DataModel.find()
-    res.json(alldata)
+    // res.json(alldata)
 })
 app.post("/", async (req, res) => {
     const fulldata = req.body
-    console.log(fulldata)
+    // console.log(fulldata)
     const sdata = new DataModel(fulldata)
     await sdata.save()
     res.send("yesss")
@@ -69,7 +69,7 @@ app.post('/api/login', async (req, res) => {
     try {
         // Find user by name
         const user = await User.findOne({ name });
-        console.log(user)
+        // console.log(user)
         if (!user) {
             return res.json({ message: 'Invalid name or password' });
         }
@@ -78,8 +78,12 @@ app.post('/api/login', async (req, res) => {
         if (!match) {
             return res.json({ message: 'Invalid name or password' });
         }
+
+        // const expirationTime = Math.floor(Date.now() / 1000) + (60 * 60);
+        const expirationTime = Math.floor(Date.now() / 1000) + 10; // Current time + 10 seconds
+        // console.log(expirationTime)
         // Generate token
-        const token = jwt.sign({ userId: user._id }, 'x6dc003akf1');
+        const token = jwt.sign({ userId: user._id }, 'x6dc003akf1', { expiresIn: 12 * 60 * 60 });
         // Set cookie with token
         // res.cookie('token', token, { maxAge: 7200000 ,
         //     path:'/edit',
@@ -89,7 +93,7 @@ app.post('/api/login', async (req, res) => {
         //     sameSite: env.ENVIRONMENT === 'LIVE' ? 'none' : 'lax',
         // }); //two hours 7200000
 
-        console.log("login side"+token)
+        // console.log("login side"+token)
 
 
         res.status(200).json({ message: 'Login successful', success: 1, token: token });
@@ -103,27 +107,27 @@ app.post('/api/login', async (req, res) => {
 
 app.post('/verifytoken', async (req, res) => {
     const jwttoken = req.headers.authorization
-    console.log("cookie in verfy \n"+jwttoken)
+    // console.log("cookie in verfy \n"+jwttoken)
     try {
         if (!jwttoken) {
             return res.send("error")
         }
-        console.log("cookie in verfy \n" + jwttoken)
+        // console.log("cookie in verfy \n" + jwttoken)
         const user = jwt.verify(jwttoken, 'x6dc003akf1')
-        console.log(user)
+        // console.log(user)
         res.json({ user: user, message: 'success' })
     }
     catch (err) {
-        console.log("error in verification")
+        // console.log("error in verification")
         res.send('error');
     }
 })
 
 
-app.get('/logout', async (req, res) => {
-    res.clearCookie('token')
-    res.send("cookie cleared")
-})
+// app.get('/logout', async (req, res) => {
+//     res.clearCookie('token')
+//     res.send("cookie cleared")
+// })
 //------------------------------------------------------------------------------------------------------------------
 
 
