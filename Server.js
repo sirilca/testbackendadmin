@@ -12,18 +12,18 @@ app.use(bodyparser.json({ limit: '50mb' }));
 app.use(bodyparser.urlencoded({ limit: '50mb', extended: true }));
 
 
-app.use(cors({ origin: ['https://adminside-project-p.onrender.com','http://localhost:5173'], 
-credentials: true ,
-methods: ['GET','POST','DELETE','OPTIONS' ],
-allowedHeaders:[
-    'Access-Control-Allow-Origin',
-    'Content-Type',
-    'Authorization',
-],
+// app.use(cors({ origin: ['https://adminside-project-p.onrender.com','http://localhost:5173'], 
+// // credentials: true ,
+// // methods: ['GET','POST','DELETE','OPTIONS' ],
+// // allowedHeaders:[
+// //     'Access-Control-Allow-Origin',
+// //     'Content-Type',
+// //     'Authorization',
+// // ],
+// })); 
+app.use(cors())
 
-})); 
-
-app.set("trust proxy", 1);
+// app.set("trust proxy", 1);
 // app.use(cors())
 
 
@@ -81,42 +81,46 @@ app.post('/api/login', async (req, res) => {
         // Generate token
         const token = jwt.sign({ userId: user._id }, 'x6dc003akf1');
         // Set cookie with token
-        res.cookie('token', token, { maxAge: 7200000 ,
-            // secure:true,
-            httpOnly:true,
-            secure: env.ENVIRONMENT === 'LIVE',
-            sameSite: env.ENVIRONMENT === 'LIVE' ? 'none' : 'lax',
-        }); //two hours 7200000
-        console.log(token)
+        // res.cookie('token', token, { maxAge: 7200000 ,
+        //     path:'/edit',
+        //     // secure:true,
+        //     httpOnly:true,
+        //     secure: env.ENVIRONMENT === 'LIVE',
+        //     sameSite: env.ENVIRONMENT === 'LIVE' ? 'none' : 'lax',
+        // }); //two hours 7200000
+
+        console.log("login side"+token)
 
 
-        res.status(200).json({ message: 'Login successful', success: 1 });
+        res.status(200).json({ message: 'Login successful', success: 1, token: token });
+        //new change due to server error
     } catch (error) {
         console.error('Login error:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 });
- 
-app.get('/verifytoken',async (req,res)=>{
-    const token= await req.cookies.token
-    console.log(token)
-    try{
-        if(!token){
+
+
+app.post('/verifytoken', async (req, res) => {
+    const jwttoken = req.headers.authorization
+    console.log("cookie in verfy \n"+jwttoken)
+    try {
+        if (!jwttoken) {
             return res.send("error")
         }
-        const user = jwt.verify(token, 'x6dc003akf1')
+        console.log("cookie in verfy \n" + jwttoken)
+        const user = jwt.verify(jwttoken, 'x6dc003akf1')
         console.log(user)
-        res.json({user:user,message:'success'})
+        res.json({ user: user, message: 'success' })
     }
-    catch (err){
-        console.log("err")
-        res.clearCookie('token')
+    catch (err) {
+        console.log("error in verification")
         res.send('error');
     }
 })
 
 
-app.get('/logout',async (req,res)=>{
+app.get('/logout', async (req, res) => {
     res.clearCookie('token')
     res.send("cookie cleared")
 })
